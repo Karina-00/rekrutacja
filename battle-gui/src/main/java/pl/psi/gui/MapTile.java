@@ -38,4 +38,7 @@ class MapTile extends StackPane {
         rect.setFill(new ImagePattern(img));
     }
 
+    void flipBackgroundImageHorizontally() {
+        rect.setScaleX(-1);
+    }
 }

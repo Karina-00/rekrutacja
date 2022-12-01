@@ -406,6 +406,10 @@ public class Creature implements PropertyChangeListener, Comparable<Creature>, S
         return false;
     }
 
+    public boolean shouldBeFacingLeft() {
+        return heroNumber == 2;
+    }
+
     protected void setCurrentHp(final double aCurrentHp) {
         currentHp = aCurrentHp;
     }

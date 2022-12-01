@@ -23,6 +23,7 @@ import pl.psi.GameEngine;
 import pl.psi.Hero;
 import pl.psi.Point;
 import pl.psi.TurnQueue;
+import pl.psi.creatures.Creature;
 import pl.psi.spells.Spell;
 import pl.psi.spells.SpellTypes;
 import pl.psi.spells.SpellableIf;
@@ -31,8 +32,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.*;
+import java.util.Optional;
 
 import static pl.psi.gui.SpellBattleController.SPELL_SELECTED;
 import static pl.psi.spells.SpellTypes.*;
@@ -63,7 +63,7 @@ public class MainBattleController implements PropertyChangeListener {
     List<SpellTypes> spellNotRequiredPressingMouse = List.of(FOR_ALL_CREATURES, FOR_ALL_ALLIED_CREATURES, FOR_ALL_ENEMY_CREATURES, SPAWN_CREATURE);
 
     public MainBattleController(Hero aHero1, Hero aHero2) {
-        gameEngine = new GameEngine(aHero1, aHero2);
+        gameEngine = new GameEngine(aHero1, aHero2); // aHero2 to sa ci po prawej
         gameEngine.addObserverToTurnQueue(TurnQueue.END_OF_TURN, this);
     }
 
@@ -171,19 +171,22 @@ public class MainBattleController implements PropertyChangeListener {
                 final int y1 = y;
                 final MapTile mapTile = new MapTile("");
 
+                // Żeby nie powtarzać tego fragmentu kodu, stworzyłam zmienną
+                Optional<Creature> optionalCreatureAtXY = gameEngine.getCreature(new Point(x1, y1));
+
                 if (gameEngine.canMove(new Point(x1, y1)) && !gameEngine.isHeroCastingSpell()) {
                     mapTile.setBackground(Color.DARKGREY);
                     List<Point> path = gameEngine.getPath(new Point(x1, y1));
 
-                    if (gameEngine.getCreature(new Point(x1, y1)).isEmpty() || gameEngine.getCreature(new Point(x1, y1)).isPresent()) {
+                    if (optionalCreatureAtXY.isEmpty() || optionalCreatureAtXY.isPresent()) {
                         mapTile.setOnMouseEntered(mouseEvent -> {
-                            if (gameEngine.getCreature(new Point(x1, y1)).isEmpty()) {
+                            if (optionalCreatureAtXY.isEmpty()) {
                                 mapTile.setBackground(Color.GREY);
                             }
                         });
 
                         mapTile.setOnMouseExited(mouseEvent -> {
-                            if (gameEngine.getCreature(new Point(x1, y1)).isEmpty()) {
+                            if (optionalCreatureAtXY.isEmpty()) {
                                 mapTile.setBackground(Color.DARKGREY);
                                 gameEngine.getField(new Point(x1, y1))
                                     .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
@@ -204,11 +207,16 @@ public class MainBattleController implements PropertyChangeListener {
                             });
                 }
 
-                if (gameEngine.getCreature(new Point(x1, y1)).isPresent()) {
+                if (optionalCreatureAtXY.isPresent()) {
                     if (gameEngine.getCreature(new Point(x, y)).get().isAlive()) {
                         mapTile.setName("\n\n" + gameEngine.getCreature(new Point(x, y)).get().getAmount());
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getImagePath());
                         mapTile.setBackground(img);
+                        // Wystarczy, ze obrocimy mapTile tutaj (gdzie pierwszy raz ustawiamy zdjęcie danej postaci),
+                        // poniewaz obracamy obiekt rectangle i zostaje on obrócony w kolejnych odwołaniach do niego
+                        if (optionalCreatureAtXY.get().shouldBeFacingLeft()) {
+                            mapTile.flipBackgroundImageHorizontally();
+                        }
                     } else {
                         Image img = new Image("/images/dead.jpg");
                         mapTile.setBackground(img);
@@ -218,11 +226,17 @@ public class MainBattleController implements PropertyChangeListener {
 
                 if (gameEngine.canHeal(new Point(x1, y1))) {
                     mapTile.setOnMouseEntered(e -> {
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCanBuffImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getCanBuffImagePath());
                         mapTile.setBackground(img);
+                        // Tutaj musimy obrócić MapTile tylko w przypadku kiedy uwzględniamy możliwość wskrzeszenia
+                        // postaci. Wtedy postać nie spełnia warunku .isAlive() więc program nie wejdzie do wnętrza
+                        // instrukcji warunkowej zaczynającej się w linijce 218, a co za tym idzie nie obróci kafelka
+                        if (optionalCreatureAtXY.get().shouldBeFacingLeft()) {
+                            mapTile.flipBackgroundImageHorizontally();
+                        }
                     });
                     mapTile.setOnMouseExited(e -> {
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getImagePath());
                         mapTile.setBackground(img);
                     });
                     mapTile.setOnMousePressed(
@@ -235,11 +249,11 @@ public class MainBattleController implements PropertyChangeListener {
 
 //                if (gameEngine.canAttack(new Point(x, y))) {
 //                    mapTile.setOnMouseEntered(e -> {
-//                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCanAttackImagePath());
+//                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getCanAttackImagePath());
 //                        mapTile.setBackground(img);
 //                    });
 //                    mapTile.setOnMouseExited(e -> {
-//                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getImagePath());
+//                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getImagePath());
 //                        mapTile.setBackground(img);
 //                    });
 //
@@ -254,8 +268,8 @@ public class MainBattleController implements PropertyChangeListener {
                 if (gameEngine.isHeroCastingSpell()) {
                     mapTile.addEventHandler(MouseEvent.MOUSE_ENTERED,
                             mouseEvent -> {
-                                if (gameEngine.getCreature(new Point(x1, y1)).isPresent()) {
-                                    if (gameEngine.canCastSpell(selectedSpell, gameEngine.getCreature(new Point(x1, y1)).get())) {
+                                if (optionalCreatureAtXY.isPresent()) {
+                                    if (gameEngine.canCastSpell(selectedSpell, optionalCreatureAtXY.get())) {
                                         mapTile.getScene().setCursor(new ImageCursor(new Image("/images/spells images/Cast Coursor.gif")));
                                     } else {
                                         mapTile.getScene().setCursor(new ImageCursor(new Image("/images/spells images/Block Coursor.png")));
@@ -268,7 +282,7 @@ public class MainBattleController implements PropertyChangeListener {
                     mapTile.addEventHandler(MouseEvent.MOUSE_CLICKED,
                             e -> {
                                 if (e.getButton() == MouseButton.PRIMARY) {
-                                    gameEngine.getCreature(new Point(x1, y1)).ifPresent(
+                                    optionalCreatureAtXY.ifPresent(
                                             creature -> {
                                                 if (gameEngine.canCastSpell(selectedSpell, creature)) {
                                                     castSpell(new Point(x1, y1));
@@ -280,20 +294,20 @@ public class MainBattleController implements PropertyChangeListener {
                             });
                 }
 
-                if (gameEngine.getCreature(new Point(x1, y1)).isPresent()) {
+                if (optionalCreatureAtXY.isPresent()) {
                     mapTile.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY) {
-                            showStage(gameEngine.getCreatureInformation(new Point(x1, y1)), gameEngine.getCreature(new Point(x1, y1)).get().hasSpecial());
+                            showStage(gameEngine.getCreatureInformation(new Point(x1, y1)), optionalCreatureAtXY.get().hasSpecial());
                         }
                     });
                 }
                 if (gameEngine.canAttack(new Point(x, y)) && !gameEngine.isHeroCastingSpell()) {
                     mapTile.setOnMouseEntered(e -> {
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCanAttackImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getCanAttackImagePath());
                         mapTile.setBackground(img);
                     });
                     mapTile.setOnMouseExited(e -> {
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getImagePath());
                         mapTile.setBackground(img);
                     });
 
@@ -307,14 +321,13 @@ public class MainBattleController implements PropertyChangeListener {
 
                 if (gameEngine.canCreatureCastSpell(new Point(x, y))) {
                     mapTile.setOnMouseEntered(e -> {
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCanBuffImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getCanBuffImagePath());
                         mapTile.setBackground(img);
-
                     });
                     mapTile.setOnMouseExited(e -> {
-                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getImagePath());
-                        if (gameEngine.getCreature(new Point(x1, y1)).get().equals(gameEngine.getCurrentCreature())) {
-                            img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCurrentImagePath());
+                        Image img = new Image(optionalCreatureAtXY.get().getBasicStats().getImagePath());
+                        if (optionalCreatureAtXY.get().equals(gameEngine.getCurrentCreature())) {
+                            img = new Image(optionalCreatureAtXY.get().getBasicStats().getCurrentImagePath());
                         }
                         mapTile.setBackground(img);
                     });
