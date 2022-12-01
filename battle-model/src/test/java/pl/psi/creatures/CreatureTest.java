@@ -617,6 +617,44 @@ public class CreatureTest {
     }
 
     @Test
+    void creatureShouldHaveTwoCounterAttacksPerRound() {
+        final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(Range.closed(5, 5))
+                        .build())
+                .build();
+
+        final TwoCounterAttacksPerRoundCreatureDecorator twoCounterAttacksPerRoundCreature =
+                new TwoCounterAttacksPerRoundCreatureDecorator(decorated);
+
+        final Creature attacker = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(Range.closed(10, 10))
+                        .build())
+                .build();
+
+        final TurnQueue turnQueue =
+                new TurnQueue(List.of(attacker), List.of(twoCounterAttacksPerRoundCreature));
+
+        attacker.attack(twoCounterAttacksPerRoundCreature);
+        attacker.attack(twoCounterAttacksPerRoundCreature);
+
+        assertThat(twoCounterAttacksPerRoundCreature.getCurrentHp()).isEqualTo(80);
+        assertThat(attacker.getCurrentHp()).isEqualTo(90);
+        assertThat(twoCounterAttacksPerRoundCreature.getCanCounterAttack()).isFalse();
+
+        turnQueue.next();
+        turnQueue.next();
+
+        attacker.attack(twoCounterAttacksPerRoundCreature);
+        attacker.attack(twoCounterAttacksPerRoundCreature);
+
+        assertThat(twoCounterAttacksPerRoundCreature.getCurrentHp()).isEqualTo(60);
+        assertThat(attacker.getCurrentHp()).isEqualTo(80);
+        assertThat(twoCounterAttacksPerRoundCreature.getCanCounterAttack()).isFalse();
+    }
+
+    @Test
     void creatureShouldHaveInfiniteCounters() {
         final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
                         .maxHp(100)

@@ -100,7 +100,7 @@ public enum CreatureStatistic implements CreatureStatisticIf {
     ARCHER( "Archer", 6, 3, 10, 4, Range.closed( 2, 3 ), 2,
             "Archer's upgrade is literally 2 times better. Upgrade them quickly.",
             false,CreatureType.ALIVE,true, 1, CreatureGroup.OTHER),
-    GRIFFIN( "Griffin", 8, 8, 25, 5, Range.closed( 3, 6 ), 3,
+    GRIFFIN( "Griffin", 8, 8, 25, 6, Range.closed( 3, 6 ), 3,
             "High in population, griffins become castle's main unit for the midgame.",
             false,CreatureType.ALIVE,false, 2, CreatureGroup.OTHER),
     SWORDSMAN( "Swordsman", 10, 12, 35, 5, Range.closed( 6, 9 ), 4,

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import pl.psi.Hero;
 import pl.psi.SpellsBook;
+import pl.psi.creatures.CastleCreatureFactory;
 import pl.psi.creatures.DefaultDamageCalculator;
 import pl.psi.creatures.WarMachinesFactory;
 import pl.psi.hero.HeroStatistics;
@@ -49,10 +50,16 @@ public class Start extends Application {
     private Hero createP1() {
         Hero ret =
                 new Hero(List.of(
-                        new WarMachinesFactory().create(1, 1, new DefaultDamageCalculator(new Random()), 1),
-                        new NecropolisFactory().create(false, 1, 5),
-                        new NecropolisFactory().create(true, 2, 5),
-                        new NecropolisFactory().create(false, 3, 5)
+                        new CastleCreatureFactory().create(3,false, 30),
+                        new CastleCreatureFactory().create(3,false, 30)
+//                        new CastleCreatureFactory().create(2,true, 5),
+//                        new CastleCreatureFactory().create(1,true, 5),
+//                        new CastleCreatureFactory().create(1,false, 5)
+
+//                        new WarMachinesFactory().create(1, 1, new DefaultDamageCalculator(new Random()), 1),
+//                        new NecropolisFactory().create(false, 1, 5),
+//                        new NecropolisFactory().create(true, 2, 5),
+//                        new NecropolisFactory().create(false, 3, 5)
                 ), HeroStatistics.NECROMANCER,
                         SpellsBook.builder().spells(List.of(
                                 new SpellFactory().create(HASTE, BASIC, 2),
@@ -100,10 +107,11 @@ public class Start extends Application {
 
     private Hero createP2() {
         Hero ret = new Hero(List.of(
-                new StrongholdFactory().create(true, 1, 100),
-                new StrongholdFactory().create(true, 2, 3),
-                new WarMachinesFactory().create(4, 1, new DefaultDamageCalculator(new Random()), 1),
-                new WarMachinesFactory().create(2, 1, new DefaultDamageCalculator(new Random()), 1),
+                new StrongholdFactory().create(true, 1, 20),
+                new StrongholdFactory().create(true, 2, 30),
+                new StrongholdFactory().create(true, 2, 30),
+//                new WarMachinesFactory().create(4, 1, new DefaultDamageCalculator(new Random()), 1),
+//                new WarMachinesFactory().create(2, 1, new DefaultDamageCalculator(new Random()), 1),
                 new StrongholdFactory().create(false, 3, 25)
         ), HeroStatistics.KNIGHT,
                 SpellsBook.builder().spells(List.of(
