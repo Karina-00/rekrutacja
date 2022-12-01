@@ -189,6 +189,8 @@ public class MainBattleController implements PropertyChangeListener {
                                     .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
                             }
                         });
+                        gameEngine.getField(new Point(x1, y1))
+                                .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
                     }
                     mapTile.setOnMousePressed(
                             e -> {
