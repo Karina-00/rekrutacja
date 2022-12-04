@@ -491,6 +491,29 @@ public class CreatureTest {
     }
 
     @Test
+    void creatureShouldAttackSkeletonsWithBonusDamage() {
+        final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(NOT_IMPORTANT)
+                        .damage(Range.closed(10, 10))
+                        .build())
+                .build();
+
+        final BonusDamageForSkeletonsCreatureDecorator attacker =
+                new BonusDamageForSkeletonsCreatureDecorator(decorated);
+
+        final Creature skeleton = new Creature.Builder().statistic(CreatureStats.builder()
+                        .name("Skeleton")
+                        .maxHp(100)
+                        .damage(NOT_IMPORTANT_DMG)
+                        .build())
+                .build();
+
+        attacker.attack(skeleton);
+
+        assertThat(skeleton.getCurrentHp()).isEqualTo(85);
+    }
+
+    @Test
     void buffingWorksProperly() {
         final Creature creatureToDecorate = new Creature.Builder().statistic(CreatureStats.builder()
                 .maxHp(100)
