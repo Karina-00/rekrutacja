@@ -52,7 +52,7 @@ public class Start extends Application {
                 new Hero(List.of(
                         new CastleCreatureFactory().create(2,true, 50),
                         new WarMachinesFactory().create(2, 1, new DefaultDamageCalculator(new Random()), 1),
-                        new CastleCreatureFactory().create(2,true, 50)
+                        new CastleCreatureFactory().create(6,true, 10)
 //                        new WarMachinesFactory().create(1, 1, new DefaultDamageCalculator(new Random()), 1),
 //                        new NecropolisFactory().create(false, 1, 5),
 //                        new NecropolisFactory().create(true, 2, 5),

@@ -38,19 +38,23 @@ public class Board {
 
     public void putCreatureOnBoard(Point point, Creature creature){
         map.put(point, creature);
+        creature.setCurrentPosition(point);
     }
 
     private void addCreatures(final List<Creature> aCreatures, final int aXPosition) {
         for (int i = 0; i < aCreatures.size(); i++) {
+            Point point;
             if (i > 4) {
                 if (aXPosition > 2) {
-                    map.put(new Point(aXPosition - 1, (i - 5) * 2), aCreatures.get(i));
+                    point = new Point(aXPosition - 1, (i - 5) * 2);
                 } else {
-                    map.put(new Point(aXPosition + 1, (i - 5) * 2), aCreatures.get(i));
+                    point = new Point(aXPosition + 1, (i - 5) * 2);
                 }
             } else {
-                map.put(new Point(aXPosition, i * 2 + 1), aCreatures.get(i));
+                point = new Point(aXPosition, i * 2 + 1);
             }
+            map.put(point, aCreatures.get(i));
+            aCreatures.get(i).setCurrentPosition(point);
         }
     }
 
@@ -77,6 +81,7 @@ public class Board {
             map.inverse()
                     .remove(aCreature);
             map.put(aPoint, aCreature);
+            aCreature.move(aPoint);
         }
     }
 

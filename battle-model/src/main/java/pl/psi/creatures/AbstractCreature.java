@@ -3,6 +3,7 @@ package pl.psi.creatures;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.Getter;
+import pl.psi.Point;
 import pl.psi.spells.SpellNames;
 import pl.psi.spells.SpellRang;
 
@@ -171,6 +172,16 @@ public class AbstractCreature extends Creature {
     @Override
     public double getMoveRange() {
         return decorated.getMoveRange();
+    }
+
+    @Override
+    public void setCurrentPosition(Point newPoint) {
+        decorated.setCurrentPosition(newPoint);
+    }
+
+    @Override
+    public void move(Point newPoint) {
+        decorated.move(newPoint);
     }
 
     @Override

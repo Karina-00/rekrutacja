@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import pl.psi.Point;
 import pl.psi.TurnQueue;
 
 import com.google.common.collect.Range;
@@ -418,6 +419,11 @@ public class CreatureTest {
                 .build())
                 .build();
 
+        final Creature bonusDamageDefender = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(NOT_IMPORTANT_DMG)
+                        .build())
+                .build();
 
         creature.setCalculator(new MinimalDamageCalculator());
         creature.attack(minimalDamageDefender);
@@ -430,6 +436,10 @@ public class CreatureTest {
         creature.setCalculator(new ReducedDamageCalculator(0.5));
         creature.attack(reducedDamageDefender);
         assertThat(reducedDamageDefender.getCurrentHp()).isBetween(95.0, 98.0);
+
+        creature.setCalculator(new BonusDamageCalculator(0.05 * 4));
+        creature.attack(bonusDamageDefender);
+        assertThat(bonusDamageDefender.getCurrentHp()).isBetween(88.0, 94.0);
     }
 
     @Test
@@ -450,6 +460,34 @@ public class CreatureTest {
 
         doubleDamageOnHitCreature.attackWithDoubleDamage(defender);
         assertThat(defender.getCurrentHp()).isEqualTo(80);
+    }
+
+    @Test
+    void creatureShouldAttackWithBonusDamageDependingOnDistance() {
+        final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(NOT_IMPORTANT)
+                        .damage(Range.closed(10, 10))
+                        .build())
+                .build();
+
+        final BonusDamageDependingOnDistanceCreatureDecorator bonusDamageDependingOnDistanceCreature =
+                new BonusDamageDependingOnDistanceCreatureDecorator(decorated);
+
+        final Creature defender = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(NOT_IMPORTANT_DMG)
+                        .build())
+                .build();
+
+        bonusDamageDependingOnDistanceCreature.setCurrentPosition(new Point(0, 0));
+        bonusDamageDependingOnDistanceCreature.move(new Point(1, 0));
+        bonusDamageDependingOnDistanceCreature.move(new Point(2, 0));
+        bonusDamageDependingOnDistanceCreature.move(new Point(3, 0));
+        bonusDamageDependingOnDistanceCreature.move(new Point(4, 1));
+
+        bonusDamageDependingOnDistanceCreature.attack(defender);
+
+        assertThat(defender.getCurrentHp()).isEqualTo(88);
     }
 
     @Test

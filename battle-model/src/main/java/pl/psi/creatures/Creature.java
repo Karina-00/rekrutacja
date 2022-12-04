@@ -10,6 +10,7 @@ import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import pl.psi.Point;
 import pl.psi.TurnQueue;
 import pl.psi.spells.*;
 
@@ -46,6 +47,7 @@ public class Creature implements PropertyChangeListener, Comparable<Creature>, S
     private double lastAttackDamage;
     private double lastCounterAttackDamage;
     private Queue<Spell> runningSpells;
+    private Point currentPosition;
 
     Creature() {
         runningSpells = new LinkedList<>();
@@ -294,6 +296,14 @@ public class Creature implements PropertyChangeListener, Comparable<Creature>, S
 
     public double getMoveRange() {
         return getStats().getMoveRange();
+    }
+
+    public void setCurrentPosition(Point newPoint) {
+        currentPosition = newPoint;
+    }
+
+    public void move(Point newPoint) {
+        currentPosition = newPoint;
     }
 
     public int getSize() {

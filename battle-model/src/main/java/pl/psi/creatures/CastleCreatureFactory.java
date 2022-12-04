@@ -66,6 +66,11 @@ public class CastleCreatureFactory {
                             .amount(aAmount)
                             .build();
                     return new ShooterCreatureDecorator( creature2, 24 );
+                case 6:
+                    Creature champion = new Creature.Builder().statistic((CreatureStatistic.CHAMPION))
+                            .amount(aAmount)
+                            .build();
+                    return new BonusDamageDependingOnDistanceCreatureDecorator(champion);
             }
         }
         throw new IllegalArgumentException("Cannot recognize creature by tier and upgrade or not.");
