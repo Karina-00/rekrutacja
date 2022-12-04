@@ -173,6 +173,8 @@ public class MainBattleController implements PropertyChangeListener {
 
                 if (gameEngine.canMove(new Point(x1, y1)) && !gameEngine.isHeroCastingSpell()) {
                     mapTile.setBackground(Color.DARKGREY);
+                    gameEngine.getField(new Point(x1, y1))
+                            .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
                     List<Point> path = gameEngine.getPath(new Point(x1, y1));
 
                     if (gameEngine.getCreature(new Point(x1, y1)).isEmpty() || gameEngine.getCreature(new Point(x1, y1)).isPresent()) {
@@ -189,8 +191,6 @@ public class MainBattleController implements PropertyChangeListener {
                                     .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
                             }
                         });
-                        gameEngine.getField(new Point(x1, y1))
-                                .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
                     }
                     mapTile.setOnMousePressed(
                             e -> {
@@ -205,6 +205,9 @@ public class MainBattleController implements PropertyChangeListener {
                                 }
                             });
                 }
+
+                gameEngine.getField(new Point(x1, y1))
+                        .ifPresent(f -> mapTile.setBackground(new Image(f.getImagePath())));
 
                 if (gameEngine.getCreature(new Point(x1, y1)).isPresent()) {
                     if (gameEngine.getCreature(new Point(x, y)).get().isAlive()) {
