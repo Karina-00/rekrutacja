@@ -312,6 +312,39 @@ public class CreatureTest {
     }
 
     @Test
+    void shouldResurrectCreature() {
+        final Creature victim = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(10)
+                        .damage(NOT_IMPORTANT_DMG)
+                        .build())
+                .amount(5)
+                .build();
+        final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(NOT_IMPORTANT_DMG)
+                        .build())
+                .build();
+
+        final ResurrectCreatureDecorator resurrector = new ResurrectCreatureDecorator(decorated);
+
+        final Creature attacker = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(Range.closed(50, 50))
+                        .build())
+                .build();
+
+        attacker.attack(victim);
+
+        assertThat(victim.isAlive()).isFalse();
+
+        resurrector.resurrect(victim);
+
+        assertThat(victim.getAmount()).isEqualTo(5);
+        assertThat(victim.getCurrentHp()).isEqualTo(10);
+        assertThat(resurrector.canResurrect()).isFalse();
+    }
+
+    @Test
     void decoratedCreatureShouldCounterAttackProperly() {
         final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
                 .maxHp(40)

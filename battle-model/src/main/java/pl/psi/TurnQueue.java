@@ -75,6 +75,10 @@ public class TurnQueue {
         deadCreatures.add(creature);
     }
 
+    public void removeDeadCreature( final Creature creature ){
+        deadCreatures.remove(creature);
+    }
+
     public List<Creature> getDeadCreatures(){
         return deadCreatures;
     }

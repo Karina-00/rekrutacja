@@ -233,6 +233,23 @@ public class MainBattleController implements PropertyChangeListener {
                             });
                 }
 
+                if (gameEngine.canResurrect(new Point(x1, y1))) {
+                    mapTile.setOnMouseEntered(e -> {
+                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCanBuffImagePath());
+                        mapTile.setBackground(img);
+                    });
+                    mapTile.setOnMouseExited(e -> {
+                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getImagePath());
+                        mapTile.setBackground(img);
+                    });
+                    mapTile.setOnMousePressed(
+                            e -> {
+                                if (e.getButton() == MouseButton.PRIMARY) {
+                                    gameEngine.resurrect(new Point(x1, y1));
+                                }
+                            });
+                }
+
 //                if (gameEngine.canAttack(new Point(x, y))) {
 //                    mapTile.setOnMouseEntered(e -> {
 //                        Image img = new Image(gameEngine.getCreature(new Point(x1, y1)).get().getBasicStats().getCanAttackImagePath());

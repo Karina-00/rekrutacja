@@ -350,6 +350,8 @@ public class Creature implements PropertyChangeListener, Comparable<Creature>, S
         lastCounterAttackDamage = damage;
     }
 
+    protected void resurrect() { heal(Double.MAX_VALUE);}
+
     public void clearLastCounterAttackDamage() {
         setLastCounterAttackDamage(0);
     }

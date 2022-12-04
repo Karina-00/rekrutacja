@@ -4,6 +4,7 @@ import lombok.Getter;
 import pl.psi.creatures.Creature;
 import pl.psi.creatures.CreatureStatistic;
 import pl.psi.creatures.FirstAidTent;
+import pl.psi.creatures.ResurrectCreatureDecorator;
 import pl.psi.specialfields.*;
 import pl.psi.spells.*;
 
@@ -197,6 +198,15 @@ public class GameEngine {
         observerSupport.firePropertyChange(CREATURE_MOVED, null, null);
     }
 
+    public void resurrect(final Point aPoint) {
+        ResurrectCreatureDecorator archangel = (ResurrectCreatureDecorator) turnQueue.getCurrentCreature();
+        board.getCreature(aPoint)
+                .ifPresent(archangel::resurrect);
+        turnQueue.removeDeadCreature(board.getCreature(aPoint).get());
+        pass();
+        observerSupport.firePropertyChange(CREATURE_MOVED, null, null);
+    }
+
     public String getAttackInformation() {
         return attackInformation;
     }
@@ -305,6 +315,23 @@ public class GameEngine {
         return currentCreature instanceof FirstAidTent
                 && board.getCreature(aPoint)
                 .isPresent();
+    }
+
+    public boolean canResurrect(final Point aPoint) {
+        Creature currentCreature = turnQueue.getCurrentCreature();
+        Optional<Creature> optionalCreatureAtPoint = board.getCreature(aPoint);
+
+        if (currentCreature.getName() == "Archangel"
+                && optionalCreatureAtPoint.isPresent()
+                && !optionalCreatureAtPoint.get().isAlive()
+                && isCreatureAllied(optionalCreatureAtPoint.get())) {
+
+            ResurrectCreatureDecorator archangel = (ResurrectCreatureDecorator) currentCreature;
+            if (archangel.canResurrect()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

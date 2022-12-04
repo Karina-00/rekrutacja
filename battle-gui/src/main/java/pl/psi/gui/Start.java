@@ -52,6 +52,7 @@ public class Start extends Application {
                 new Hero(List.of(
                         new CastleCreatureFactory().create(2,true, 50),
                         new CastleCreatureFactory().create(7, false, 10),
+                        new CastleCreatureFactory().create(7, true, 10),
                         new CastleCreatureFactory().create(6,true, 10)
 //                        new WarMachinesFactory().create(1, 1, new DefaultDamageCalculator(new Random()), 1),
 //                        new NecropolisFactory().create(false, 1, 5),
@@ -104,12 +105,12 @@ public class Start extends Application {
 
     private Hero createP2() {
         Hero ret = new Hero(List.of(
-                new StrongholdFactory().create(true, 1, 20),
-                new NecropolisFactory().create(false, 1, 100),
-                new NecropolisFactory().create(false, 1, 100),
+                new StrongholdFactory().create(true, 7, 10),
+                new NecropolisFactory().create(false, 5, 10),
+                new NecropolisFactory().create(false, 1, 10),
 //                new WarMachinesFactory().create(4, 1, new DefaultDamageCalculator(new Random()), 1),
 //                new WarMachinesFactory().create(2, 1, new DefaultDamageCalculator(new Random()), 1),
-                new StrongholdFactory().create(false, 3, 25)
+                new StrongholdFactory().create(false, 4, 25)
         ), HeroStatistics.KNIGHT,
                 SpellsBook.builder().spells(List.of(
                         new SpellFactory().create(HASTE, BASIC, 2),

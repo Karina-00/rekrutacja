@@ -76,6 +76,11 @@ public class CastleCreatureFactory {
                             .amount(aAmount)
                             .build();
                     return new BonusDamageDependingOnDistanceCreatureDecorator(champion);
+                case 7:
+                    Creature archangel = new Creature.Builder().statistic(CreatureStatistic.ARCHANGEL)
+                            .amount(aAmount)
+                            .build();
+                    return new ResurrectCreatureDecorator(archangel);
             }
         }
         throw new IllegalArgumentException("Cannot recognize creature by tier and upgrade or not.");
