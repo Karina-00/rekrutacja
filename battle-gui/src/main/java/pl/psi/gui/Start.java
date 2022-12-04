@@ -50,12 +50,9 @@ public class Start extends Application {
     private Hero createP1() {
         Hero ret =
                 new Hero(List.of(
-                        new CastleCreatureFactory().create(3,false, 30),
-                        new CastleCreatureFactory().create(3,false, 30)
-//                        new CastleCreatureFactory().create(2,true, 5),
-//                        new CastleCreatureFactory().create(1,true, 5),
-//                        new CastleCreatureFactory().create(1,false, 5)
-
+                        new CastleCreatureFactory().create(2,true, 50),
+                        new WarMachinesFactory().create(2, 1, new DefaultDamageCalculator(new Random()), 1),
+                        new CastleCreatureFactory().create(2,true, 50)
 //                        new WarMachinesFactory().create(1, 1, new DefaultDamageCalculator(new Random()), 1),
 //                        new NecropolisFactory().create(false, 1, 5),
 //                        new NecropolisFactory().create(true, 2, 5),

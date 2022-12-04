@@ -590,6 +590,33 @@ public class CreatureTest {
     }
 
     @Test
+    void rangeAttackShouldBeDoubled() {
+        final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(6)
+                        .damage(Range.closed(10, 10))
+                        .build())
+                .build();
+
+        final DoubleRangeAttack doubleRangeAttackCreature = new DoubleRangeAttack(decorated,24);
+
+        final Creature defender = new Creature.Builder().statistic(CreatureStats.builder()
+                        .maxHp(100)
+                        .damage(NOT_IMPORTANT_DMG)
+                        .build())
+                .build();
+
+        doubleRangeAttackCreature.setInMelee(false);
+        doubleRangeAttackCreature.attack(defender);
+
+        assertThat(defender.getCurrentHp()).isEqualTo(80);
+
+        doubleRangeAttackCreature.setInMelee(true);
+        doubleRangeAttackCreature.attack(defender);
+
+        assertThat(defender.getCurrentHp()).isEqualTo(75);
+    }
+
+    @Test
     void creatureShouldHaveTwoCounters() {
         final Creature decorated = new Creature.Builder().statistic(CreatureStats.builder()
                         .maxHp(100)
